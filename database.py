@@ -1,5 +1,6 @@
 import aiosqlite
 from datetime import date
+from typing import Optional
 from config import DATABASE_PATH, ADMIN_IDS
 
 
@@ -48,7 +49,7 @@ async def init_db():
         await db.commit()
 
 
-async def get_config(key: str) -> str | None:
+async def get_config(key: str) -> Optional[str]:
     async with aiosqlite.connect(DATABASE_PATH) as db:
         cursor = await db.execute("SELECT value FROM config WHERE key = ?", (key,))
         row = await cursor.fetchone()
