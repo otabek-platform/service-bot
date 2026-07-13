@@ -1,3 +1,4 @@
+from typing import List, Dict, Tuple
 from groq import AsyncGroq
 from config import AI_SYSTEM_PROMPT
 
@@ -10,7 +11,7 @@ def get_client(api_key: str) -> AsyncGroq:
     return AsyncGroq(api_key=api_key)
 
 
-async def chat_completion(api_key: str, messages: list[dict]) -> tuple[str, int]:
+async def chat_completion(api_key: str, messages: List[Dict]) -> Tuple[str, int]:
     client = get_client(api_key)
     full_messages = [SYSTEM_MSG] + messages
 
