@@ -70,7 +70,7 @@ def bot_purpose_kb():
 
 def gps_type_kb():
     builder = InlineKeyboardBuilder()
-    builder.button(text="🚗 Личный автомобиль", callback_data="opurpose_gps_personal")
+    builder.button(text="🚗 Личный автомобиль ($10/мес)", callback_data="opurpose_gps_personal")
     builder.button(text="🚛 Автопарк (2-5 машин)", callback_data="opurpose_gps_fleet_small")
     builder.button(text="🚛🚛 Автопарк (5-10 машин)", callback_data="opurpose_gps_fleet_big")
     builder.button(text="📡 Оборудование / Активы", callback_data="opurpose_gps_equipment")
@@ -115,9 +115,9 @@ def budget_kb():
 
 def gps_budget_kb():
     builder = InlineKeyboardBuilder()
-    builder.button(text="до $100", callback_data="obudget_100")
-    builder.button(text="$100-300", callback_data="obudget_300")
-    builder.button(text="$300+", callback_data="obudget_1000")
+    builder.button(text="$10-30", callback_data="obudget_30")
+    builder.button(text="$30-80", callback_data="obudget_80")
+    builder.button(text="$80+", callback_data="obudget_150")
     builder.button(text="Не знаю / Обсудить", callback_data="obudget_unknown")
     builder.button(text="❌ Отменить", callback_data="order_cancel")
     builder.adjust(2)

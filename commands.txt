@@ -1,0 +1,114 @@
+========================================
+  ЗАЛИТЬ БОТА НА GITHUB
+========================================
+
+# 1. Удалить .env из git (чтоб токен не попал в репозиторий)
+cd /home/otabek-dev/Рабочий\ стол/bot
+git rm --cached .env
+echo ".env" >> .gitignore
+git add .gitignore
+git commit -m "chore: remove .env from tracking"
+
+# 2. Создать репозиторий на GitHub
+#    Зайди на https://github.com/otabek-platform
+#    Нажми "New" -> название: service-bot
+#    НЕ ставь галочки README, .gitignore, лицензию
+#    Нажми "Create repository"
+
+# 3. Запушить код
+git remote add origin https://github.com/otabek-platform/service-bot.git
+git push -u origin main
+
+
+========================================
+  ЗАПУСТИТЬ БОТА 24/7 (VPS/LINUX)
+========================================
+
+# Эти команды выполняются на сервере (VPS):
+
+# 1. Установить зависимости
+cd /opt
+git clone https://github.com/otabek-platform/service-bot.git
+cd service-bot
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# 2. Создать .env с токенами
+nano .env
+
+# Вставь в .env:
+# BOT_TOKEN=8825669399:AAH3tBEYSlUSHY222S4JRuJCljR23u24JrQ
+# ADMIN_IDS=8520245343
+# GROQ_API_KEY=
+# DATABASE_PATH=bot.db
+
+# 3. Создать systemd сервис
+sudo nano /etc/systemd/system/service-bot.service
+
+# Вставь в файл:
+# [Unit]
+# Description=IT Service Bot
+# After=network.target
+#
+# [Service]
+# Type=simple
+# User=root
+# WorkingDirectory=/opt/service-bot
+# EnvironmentFile=/opt/service-bot/.env
+# ExecStart=/opt/service-bot/venv/bin/python3 main.py
+# Restart=on-failure
+# RestartSec=5
+#
+# [Install]
+# WantedBy=multi-user.target
+
+# 4. Запустить
+sudo systemctl daemon-reload
+sudo systemctl enable service-bot
+sudo systemctl start service-bot
+sudo systemctl status service-bot
+
+# Логи:
+sudo journalctl -u service-bot -f
+
+
+========================================
+  КОМАНДЫ ДЛЯ БОТА В ТЕЛЕГРАМЕ
+========================================
+
+/start     — главное меню
+/admin     — админ-панель
+/exit      — выйти из AI чата
+
+
+========================================
+  ПОЧИНИТЬ SYSTEMd (ЕСЛИ НЕ СТАРТУЕТ)
+========================================
+
+# 1. Проверить .env
+ls -la /opt/service-bot/.env
+
+# 2. Если нет .env — создать
+nano /opt/service-bot/.env
+
+# Содержимое .env:
+BOT_TOKEN=8825669399:AAH3tBEYSlUSHY222S4JRuJCljR23u24JrQ
+ADMIN_IDS=8520245343
+GROQ_API_KEY=
+DATABASE_PATH=bot.db
+
+# 3. Проверить что бот запускается вручную
+cd /opt/service-bot && source venv/bin/activate && python3 main.py
+
+# 4. Если бот запускается — правим systemd
+sudo systemctl edit service-bot
+
+# Вставь это и сохрани (Ctrl+S, Ctrl+X):
+[Service]
+WorkingDirectory=/opt/service-bot
+ExecStart=
+ExecStart=/opt/service-bot/venv/bin/python3 /opt/service-bot/main.py
+
+# 5. Перезапустить
+sudo systemctl daemon-reload && sudo systemctl restart service-bot && sudo systemctl status service-bot

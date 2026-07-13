@@ -24,10 +24,10 @@ PRICE_TABLE = {
     "bot_catalog":     {"label": "Каталог товаров", "min": 150, "max": 400},
     "bot_shop":        {"label": "Магазин с оплатой", "min": 250, "max": 700},
     "bot_ai":          {"label": "AI-ассистент", "min": 400, "max": 1200},
-    "gps_personal":    {"label": "Личный автомобиль", "min": 40, "max": 100},
-    "gps_fleet_small": {"label": "Автопарк (2-5 машин)", "min": 150, "max": 400},
-    "gps_fleet_big":   {"label": "Автопарк (5-10 машин)", "min": 300, "max": 700},
-    "gps_equipment":   {"label": "Оборудование / Активы", "min": 80, "max": 200},
+    "gps_personal":    {"label": "Личный автомобиль (аренда)", "min": 10, "max": 30},
+    "gps_fleet_small": {"label": "Автопарк (2-5 машин)", "min": 30, "max": 80},
+    "gps_fleet_big":   {"label": "Автопарк (5-10 машин)", "min": 50, "max": 150},
+    "gps_equipment":   {"label": "Оборудование / Активы", "min": 15, "max": 50},
 }
 
 DESIGN_PRICES = {
@@ -45,7 +45,10 @@ INTEGRATION_PRICES = {
 }
 
 LABEL_MAP = {
+    "obudget_30": "$10-30",
+    "obudget_80": "$30-80",
     "obudget_100": "до $100",
+    "obudget_150": "$80+",
     "obudget_300": "до $300",
     "obudget_600": "$300-600",
     "obudget_1000": "$600-1000",
@@ -193,8 +196,9 @@ async def order_gps_start(message: Message, state: FSMContext):
     await state.update_data(project_type="gps")
     await state.set_state(OrderState.purpose)
     await message.answer(
-        "📡 *Установка GPS трекера*\n\n"
-        "Для каких целей нужен трекер?",
+        "📡 *GPS трекер (аренда)*\n\n"
+        "Аренда GPS трекера от **$10/100 сомони** в месяц.\n"
+        "Выберите тип:",
         reply_markup=gps_type_kb(),
     )
 
@@ -325,7 +329,8 @@ async def budget_chosen(callback: CallbackQuery, state: FSMContext):
         summary += "Точную оценку даст Otabek после обсуждения.\n"
     else:
         summary += f"  💵 **${min_p} – ${max_p}**\n\n"
-        client_budget = {"100": 100, "300": 300, "600": 600,
+        client_budget = {"30": 30, "80": 80, "100": 100, "150": 150,
+                         "300": 300, "600": 600,
                          "1000": 1000, "2000": 2000}.get(budget, 0)
         if client_budget and client_budget < min_p:
             summary += (
@@ -334,7 +339,7 @@ async def budget_chosen(callback: CallbackQuery, state: FSMContext):
                 f"Otabek предложит оптимальное решение под ваш бюджет.\n"
             )
         elif client_budget and client_budget >= max_p:
-            summary += f"✅ Ваш бюджет соответствует预估ке. Otabek подтвердит финальную цену.\n"
+            summary += f"✅ Ваш бюджет соответствует оценке. Otabek подтвердит финальную цену.\n"
         elif client_budget:
             summary += f"Otabek подберёт лучшее решение в рамках вашего бюджета.\n"
 
