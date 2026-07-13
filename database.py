@@ -85,7 +85,7 @@ async def get_orders(limit: int = 20) -> list:
         return [dict(row) for row in rows]
 
 
-async def get_order(order_id: int) -> dict | None:
+async def get_order(order_id: int) -> Optional[dict]:
     async with aiosqlite.connect(DATABASE_PATH) as db:
         db.row_factory = aiosqlite.Row
         cursor = await db.execute("SELECT * FROM orders WHERE id = ?", (order_id,))
